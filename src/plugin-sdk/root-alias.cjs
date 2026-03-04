@@ -3,7 +3,10 @@
 const path = require("node:path");
 const fs = require("node:fs");
 
-let monolithicSdk = null;
+const MONOLITHIC_SDK_UNCHECKED = Symbol("monolithic-sdk-unchecked");
+const MONOLITHIC_SDK_UNAVAILABLE = Symbol("monolithic-sdk-unavailable");
+
+let monolithicSdk = MONOLITHIC_SDK_UNCHECKED;
 let legacyJiti = null;
 const legacyModuleCache = new Map();
 
@@ -46,20 +49,23 @@ function createJitiLoader() {
 }
 
 function loadMonolithicSdk() {
-  if (monolithicSdk) {
-    return monolithicSdk;
+  if (monolithicSdk !== MONOLITHIC_SDK_UNCHECKED) {
+    return monolithicSdk === MONOLITHIC_SDK_UNAVAILABLE ? null : monolithicSdk;
   }
 
+  monolithicSdk = MONOLITHIC_SDK_UNAVAILABLE;
+
   const distCandidate = path.resolve(__dirname, "..", "..", "dist", "plugin-sdk", "index.js");
-  if (fs.existsSync(distCandidate)) {
-    try {
-      monolithicSdk = createJitiLoader()(distCandidate);
-      return monolithicSdk;
-    } catch {
-      // Fall through to source alias if dist is unavailable or stale.
-    }
+  if (!fs.existsSync(distCandidate)) {
+    return null;
   }
-  return null;
+
+  try {
+    monolithicSdk = createJitiLoader()(distCandidate);
+    return monolithicSdk;
+  } catch {
+    return null;
+  }
 }
 
 const fastExports = {
