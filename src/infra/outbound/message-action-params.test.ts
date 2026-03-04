@@ -87,7 +87,7 @@ describe("send buffer hydration", () => {
       Buffer.from("hello"),
       "text/plain",
       "outbound",
-      undefined,
+      5,
       "test.txt",
     );
     expect(args.media).toBe("/tmp/test.txt");

@@ -48,8 +48,7 @@ describe("runMessageAction send buffer hydration", () => {
       id: "media-1",
       path: "/tmp/openclaw-outbound/test-buffer.txt",
       contentType: "text/plain",
-      sizeBytes: 5,
-      createdAt: Date.now(),
+      size: 5,
     });
     setActivePluginRegistry(
       createTestRegistry([{ pluginId: "slack", source: "test", plugin: slackPlugin }]),
@@ -75,9 +74,12 @@ describe("runMessageAction send buffer hydration", () => {
       Buffer.from("hello"),
       "text/plain",
       "outbound",
-      undefined,
+      5,
       "test-buffer.txt",
     );
+    if (result.kind !== "send") {
+      throw new Error("expected send result");
+    }
     expect(result.sendResult?.mediaUrl).toBe("/tmp/openclaw-outbound/test-buffer.txt");
   });
 
@@ -103,6 +105,9 @@ describe("runMessageAction send buffer hydration", () => {
 
       expect(result.kind).toBe("send");
       expect(result.handledBy).toBe("core");
+      if (result.kind !== "send") {
+        throw new Error("expected send result");
+      }
       expect(result.sendResult?.mediaUrl).toBe(
         path.join(sandboxDir, "outbound", "sandbox-buffer.txt"),
       );

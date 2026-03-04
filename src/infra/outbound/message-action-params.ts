@@ -347,7 +347,7 @@ export async function hydrateBufferedSendParams(params: {
       buffer,
       requestedContentType,
       "outbound",
-      maxBytes,
+      maxBytes ?? buffer.byteLength,
       fileName ?? undefined,
     );
     params.args.media = saved.path;

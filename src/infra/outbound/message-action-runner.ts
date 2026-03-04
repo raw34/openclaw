@@ -751,14 +751,16 @@ export async function runMessageAction(
     mediaPolicy,
   });
 
-  await hydrateBufferedSendParams({
-    cfg,
-    channel,
-    accountId,
-    args: params,
-    dryRun,
-    mediaPolicy,
-  });
+  if (action === "send") {
+    await hydrateBufferedSendParams({
+      cfg,
+      channel,
+      accountId,
+      args: params,
+      dryRun,
+      mediaPolicy,
+    });
+  }
 
   const resolvedTarget = await resolveActionTarget({
     cfg,
