@@ -26,6 +26,7 @@ import type { OutboundSendDeps } from "./deliver.js";
 import { normalizeMessageActionInput } from "./message-action-normalization.js";
 import {
   hydrateAttachmentParamsForAction,
+  hydrateBufferedSendParams,
   normalizeSandboxMediaList,
   normalizeSandboxMediaParams,
   parseButtonsParam,
@@ -746,6 +747,15 @@ export async function runMessageAction(
     accountId,
     args: params,
     action,
+    dryRun,
+    mediaPolicy,
+  });
+
+  await hydrateBufferedSendParams({
+    cfg,
+    channel,
+    accountId,
+    args: params,
     dryRun,
     mediaPolicy,
   });
