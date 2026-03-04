@@ -301,6 +301,10 @@ export async function hydrateBufferedSendParams(params: {
     return;
   }
 
+  if (params.dryRun) {
+    return;
+  }
+
   const maxBytes = resolveAttachmentMaxBytes({
     cfg: params.cfg,
     channel: params.channel,

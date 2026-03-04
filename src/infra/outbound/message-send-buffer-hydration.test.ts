@@ -70,20 +70,14 @@ describe("runMessageAction send buffer hydration", () => {
 
     expect(result.kind).toBe("send");
     expect(result.handledBy).toBe("core");
-    expect(saveMediaBufferSpy).toHaveBeenCalledWith(
-      Buffer.from("hello"),
-      "text/plain",
-      "outbound",
-      5,
-      "test-buffer.txt",
-    );
+    expect(saveMediaBufferSpy).not.toHaveBeenCalled();
     if (result.kind !== "send") {
       throw new Error("expected send result");
     }
-    expect(result.sendResult?.mediaUrl).toBe("/tmp/openclaw-outbound/test-buffer.txt");
+    expect(result.sendResult?.mediaUrl).toBeNull();
   });
 
-  it("materializes sandbox buffer payloads into sandbox outbound for Telegram dry-run sends", async () => {
+  it("skips sandbox buffer materialization for Telegram dry-run sends", async () => {
     setActivePluginRegistry(
       createTestRegistry([{ pluginId: "telegram", source: "test", plugin: telegramPlugin }]),
     );
@@ -108,12 +102,10 @@ describe("runMessageAction send buffer hydration", () => {
       if (result.kind !== "send") {
         throw new Error("expected send result");
       }
-      expect(result.sendResult?.mediaUrl).toBe(
-        path.join(sandboxDir, "outbound", "sandbox-buffer.txt"),
-      );
+      expect(result.sendResult?.mediaUrl).toBeNull();
       await expect(
-        fs.readFile(path.join(sandboxDir, "outbound", "sandbox-buffer.txt"), "utf8"),
-      ).resolves.toBe("hello");
+        fs.access(path.join(sandboxDir, "outbound", "sandbox-buffer.txt")),
+      ).rejects.toBeDefined();
     });
   });
 });
