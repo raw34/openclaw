@@ -384,7 +384,8 @@ describe("slack prepareSlackMessage inbound contract", () => {
     // oxlint-disable-next-line typescript/no-explicit-any
     slackCtx.resolveUserName = async () => ({ name: "Bot" }) as any;
 
-    const { recordSlackThreadParticipation } = await import("../../sent-thread-cache.js");
+    const { recordSlackThreadParticipation, clearSlackThreadParticipationCache } =
+      await import("../../sent-thread-cache.js");
     recordSlackThreadParticipation("default", "C123", "1.000");
 
     const account = createSlackAccount({ allowBots: "mentions" });
@@ -399,6 +400,7 @@ describe("slack prepareSlackMessage inbound contract", () => {
 
     const prepared = await prepareMessageWith(slackCtx, account, message);
     expect(prepared).toBeTruthy();
+    clearSlackThreadParticipationCache();
   });
 
   it("keeps channel metadata out of GroupSystemPrompt", async () => {
