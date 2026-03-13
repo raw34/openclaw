@@ -407,8 +407,7 @@ export async function preflightDiscordMessage(
   const explicitlyMentioned = Boolean(
     botId &&
     (message.mentionedUsers?.some((user: User) => user.id === botId) ||
-      message.content?.includes(`<@${botId}>`) ||
-      message.content?.includes(`<@!${botId}>`)),
+      new RegExp(`(?<!\\\\)<@!?${botId}>`).test(message.content ?? "")),
   );
   const hasAnyMention = Boolean(
     !isDirectMessage &&
